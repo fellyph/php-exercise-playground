@@ -1,0 +1,173 @@
+/* Base Variables */
+:root {
+  --primary-color: #646cff; /* Vite blue */
+  --bg-color: #1a1a1a;
+  --surface-color: #242424;
+  --panel-bg: #202020;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --border-color: #333;
+  --header-height: 60px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+header {
+  height: var(--header-height);
+  background-color: var(--surface-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.primary-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.primary-btn:active {
+  opacity: 0.8;
+}
+
+/* Layout Main */
+.playground-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  height: calc(100vh - var(--header-height));
+}
+
+/* 1. Instructions Panel */
+#instructions-panel {
+  width: 350px;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+  overflow-y: auto;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+#instructions-panel h1 { font-size: 1.4rem; margin-bottom: 1rem; margin-top: 0; }
+#instructions-panel h2 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #fff; }
+#instructions-panel code { 
+  background: #333; 
+  padding: 2px 4px; 
+  border-radius: 4px; 
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+#instructions-panel pre { 
+  background: #111; 
+  padding: 1rem; 
+  border-radius: 6px; 
+  overflow-x: auto; 
+  margin: 1rem 0;
+}
+#instructions-panel pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* 2. Editor & Output Area */
+.editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevent flex overflow */
+}
+
+#editor-container {
+  flex: 2;
+  overflow: hidden;
+  position: relative;
+}
+
+#output-container {
+  flex: 1;
+  background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid var(--border-color);
+}
+
+.output-header {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+}
+
+#output {
+  padding: 1rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  flex: 1;
+  color: #ccc;
+}
+
+/* Test Results Colors */
+.pass { color: #4caf50; font-weight: bold; }
+.fail { color: #f44336; font-weight: bold; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .playground-layout {
+    flex-direction: column;
+  }
+
+  #instructions-panel {
+    width: 100%;
+    height: 35%; /* Fixed height for instructions on mobile */
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  #editor-container {
+    flex: 2;
+  }
+
+  #output-container {
+    flex: 1;
+  }
+}

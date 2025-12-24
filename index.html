@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Playground PHP</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>PHP Interativo</h1>
+        <button id="run-btn" class="primary-btn">Executar (Ctrl+Enter) ▶</button>
+      </header>
+      
+      <main class="playground-layout">
+        <aside id="instructions-panel">
+          <div id="exercise-content">
+            <h2>Select an exercise</h2>
+            <p>Loading...</p>
+          </div>
+        </aside>
+        
+        <div class="editor-area">
+          <div id="editor-container"></div>
+          <div id="output-container">
+            <div class="output-header">
+              <span>Resultado</span>
+              <span id="test-status"></span>
+            </div>
+            <pre id="output"></pre>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

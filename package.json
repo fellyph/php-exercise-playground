@@ -1,0 +1,37 @@
+{
+  "name": "php-mobile-editor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/marked": "^5.0.2",
+    "@types/node": "^25.0.3",
+    "@types/path-browserify": "^1.0.3",
+    "typescript": "^5.9.3",
+    "vite": "^5.0.0",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.5.0"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.0.0",
+    "@codemirror/lang-php": "^6.0.0",
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@php-wasm/universal": "^3.0.34",
+    "@php-wasm/web": "latest",
+    "codemirror": "^6.0.1",
+    "js-yaml": "^4.1.1",
+    "marked": "^17.0.1",
+    "path-browserify": "^1.0.1"
+  }
+}
