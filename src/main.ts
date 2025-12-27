@@ -127,7 +127,7 @@ async function runCode() {
       renderTestResults(userOutput, testData.results);
     } else {
       // No test results found (maybe syntax error or didn't run to completion)
-      outputEl.textContent = fullOutput;
+      outputEl.innerHTML = fullOutput;
       statusEl.textContent = "⚠️ Erro";
       statusEl.className = "fail";
     }

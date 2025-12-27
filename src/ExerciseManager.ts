@@ -55,6 +55,7 @@ export class ExerciseManager {
 
     // PHP snippet to append
     const runnerCode = `
+?>
 <?php
 // --- END USER DATA ---
 
@@ -68,7 +69,11 @@ foreach ($tests as $index => $test) {
     try {
         // Capture output if the function prints instead of returning
         ob_start();
-        $actual = call_user_func_array('somar', $input);
+        if (function_exists('somar')) {
+            $actual = call_user_func_array('somar', $input);
+        } else {
+             throw new Exception("Função 'somar' não encontrada.");
+        }
         $output = ob_get_clean();
         
         // If function returned nothing, check captured output (optional, depending on exercise type)
@@ -102,14 +107,8 @@ foreach ($tests as $index => $test) {
 echo "---TEST_RESULTS_START---";
 echo json_encode(['results' => $results]);
 echo "---TEST_RESULTS_END---";
-?>
-`;
-    // Remove closing PHP tag from user code if present to avoid syntax error when appending
-    let cleanUserCode = userCode.trim();
-    if (cleanUserCode.endsWith("?>")) {
-      cleanUserCode = cleanUserCode.substring(0, cleanUserCode.length - 2);
-    }
+?>`;
 
-    return cleanUserCode + "\n" + runnerCode;
+    return userCode + "\n" + runnerCode;
   }
 }
