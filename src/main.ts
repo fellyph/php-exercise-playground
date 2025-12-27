@@ -7,6 +7,8 @@ import { loadWebRuntime } from "@php-wasm/web";
 import { ExerciseManager } from "./ExerciseManager";
 import { marked } from "marked";
 
+const EXERCISES = ["soma", "multiplicar"];
+
 interface TestResult {
   id: number;
   input: any[];
@@ -16,7 +18,10 @@ interface TestResult {
   error?: string;
 }
 
-let currentLanguage = "pt";
+const urlParams = new URLSearchParams(window.location.search);
+let currentLanguage = urlParams.get("lang") || "pt";
+let currentExerciseId = urlParams.get("exercise") || "soma";
+const hideHeader = urlParams.get("hide-header") === "true";
 
 const uiTranslations: Record<string, any> = {
   pt: {
@@ -39,6 +44,8 @@ const uiTranslations: Record<string, any> = {
     obtainedLabel: "Obtido",
     errorLabel: "Erro",
     placeholder: "Escreva seu código aqui",
+    next: "Próximo",
+    prev: "Anterior",
   },
   en: {
     run: "Run (Ctrl+Enter) ▶",
@@ -60,6 +67,8 @@ const uiTranslations: Record<string, any> = {
     obtainedLabel: "Obtained",
     errorLabel: "Error",
     placeholder: "Write your code here",
+    next: "Next",
+    prev: "Previous",
   },
   es: {
     run: "Ejecutar (Ctrl+Enter) ▶",
@@ -81,6 +90,8 @@ const uiTranslations: Record<string, any> = {
     obtainedLabel: "Obtenido",
     errorLabel: "Error",
     placeholder: "Escriba su código aquí",
+    next: "Siguiente",
+    prev: "Anterior",
   },
 };
 
@@ -108,6 +119,19 @@ async function init() {
     return;
   }
 
+  if (hideHeader) {
+    const header = document.querySelector("header");
+    if (header) header.style.display = "none";
+    document.body.classList.add("no-header");
+  }
+
+  // Set initial value for language select
+  const langSelect = document.getElementById("language-select") as HTMLSelectElement;
+  if (langSelect) {
+    langSelect.value = currentLanguage;
+    updateUiLanguage(); // Ensure initial UI is translated
+  }
+
   // Initialize CodeMirror
   const state = EditorState.create({
     doc: getInitialPhpCode("somar"),
@@ -119,7 +143,8 @@ async function init() {
     parent: editorContainer,
   });
 
-  const langSelect = document.getElementById("language-select") as HTMLSelectElement;
+  (window as any).editor = editor;
+
   if (langSelect) {
     langSelect.addEventListener("change", async (e) => {
       currentLanguage = (e.target as HTMLSelectElement).value;
@@ -130,20 +155,27 @@ async function init() {
     });
   }
 
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+
+  if (prevBtn) prevBtn.addEventListener("click", navigateExercise(-1));
+  if (nextBtn) nextBtn.addEventListener("click", navigateExercise(1));
+
   runBtn.addEventListener("click", runCode);
 
-  outputEl.textContent = "Carregando motor PHP...";
+    const t = uiTranslations[currentLanguage];
+    outputEl.textContent = t.loadingPhp;
 
   // Initialize PHP WASM
   try {
     const runtime = await loadWebRuntime("8.3");
     phpEngine = new PHP(runtime);
     console.log("PHP Engine loaded", phpEngine);
-    outputEl.textContent = "PHP Pronto. Carregando exercício...";
+    outputEl.textContent = t.phpReady;
 
     // Load Exercise
     await loadExercise();
-    outputEl.textContent = "Pronto para começar.";
+    outputEl.textContent = t.ready;
   } catch (e: any) {
     outputEl.textContent = "Erro ao carregar: " + e.message;
     console.error(e);
@@ -160,6 +192,30 @@ function updateUiLanguage() {
   if (runBtn) runBtn.textContent = t.run;
   if (resultLabel) resultLabel.textContent = t.result;
   if (title) title.textContent = currentLanguage === "pt" ? "PHP Interativo" : (currentLanguage === "en" ? "Interactive PHP" : "PHP Interactivo");
+
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  if (prevBtn) prevBtn.textContent = `⬅ ${t.prev}`;
+  if (nextBtn) nextBtn.textContent = `${t.next} ➡`;
+}
+
+function navigateExercise(direction: number) {
+  return async () => {
+    const currentIndex = EXERCISES.indexOf(currentExerciseId);
+    let nextIndex = currentIndex + direction;
+
+    if (nextIndex < 0) nextIndex = EXERCISES.length - 1;
+    if (nextIndex >= EXERCISES.length) nextIndex = 0;
+
+    currentExerciseId = EXERCISES[nextIndex];
+    
+    // Update URL without reloading
+    const url = new URL(window.location.href);
+    url.searchParams.set("exercise", currentExerciseId);
+    window.history.pushState({}, "", url);
+
+    await loadExercise();
+  };
 }
 
 async function loadExercise() {
@@ -167,9 +223,9 @@ async function loadExercise() {
   if (!instructionsEl) return;
 
   try {
-    // Load based on language
+    // Load based on language and exercise ID
     const exercise = await exerciseManager.loadExercise(
-      `./src/exercises/${currentLanguage}/soma.md`
+      `./src/exercises/${currentLanguage}/${currentExerciseId}.md`
     );
 
     // Render Instructions
