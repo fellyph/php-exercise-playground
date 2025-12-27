@@ -40,6 +40,21 @@ header {
   flex-shrink: 0;
 }
 
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+#language-select {
+  background: #333;
+  color: white;
+  border: 1px solid #444;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  outline: none;
+}
+
 h1 {
   font-size: 1.2rem;
   font-weight: 600;

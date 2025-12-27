@@ -16,12 +16,83 @@ interface TestResult {
   error?: string;
 }
 
-const initialPhpCode = `<?php
-function somar($a, $b) {
-    // Escreva seu código aqui
+let currentLanguage = "pt";
+
+const uiTranslations: Record<string, any> = {
+  pt: {
+    run: "Executar (Ctrl+Enter) ▶",
+    result: "Resultado",
+    loadingPhp: "Carregando motor PHP...",
+    phpReady: "PHP Pronto. Carregando exercício...",
+    ready: "Pronto para começar.",
+    executing: "Executando...",
+    error: "Erro",
+    fail: "Falhou",
+    passed: "Aprovado",
+    userOutput: "Output do seu código:",
+    testResults: "Resultados dos Testes:",
+    testLabel: "Teste",
+    passedLabel: "Passou",
+    failedLabel: "Falhou",
+    inputLabel: "Input",
+    expectedLabel: "Esperado",
+    obtainedLabel: "Obtido",
+    errorLabel: "Erro",
+    placeholder: "Escreva seu código aqui",
+  },
+  en: {
+    run: "Run (Ctrl+Enter) ▶",
+    result: "Result",
+    loadingPhp: "Loading PHP engine...",
+    phpReady: "PHP Ready. Loading exercise...",
+    ready: "Ready to start.",
+    executing: "Executing...",
+    error: "Error",
+    fail: "Failed",
+    passed: "Passed",
+    userOutput: "Your code output:",
+    testResults: "Test Results:",
+    testLabel: "Test",
+    passedLabel: "Passed",
+    failedLabel: "Failed",
+    inputLabel: "Input",
+    expectedLabel: "Expected",
+    obtainedLabel: "Obtained",
+    errorLabel: "Error",
+    placeholder: "Write your code here",
+  },
+  es: {
+    run: "Ejecutar (Ctrl+Enter) ▶",
+    result: "Resultado",
+    loadingPhp: "Cargando motor PHP...",
+    phpReady: "PHP Listo. Cargando ejercicio...",
+    ready: "Listo para comenzar.",
+    executing: "Ejecutando...",
+    error: "Error",
+    fail: "Falló",
+    passed: "Aprobado",
+    userOutput: "Salida de tu código:",
+    testResults: "Resultados de las Pruebas:",
+    testLabel: "Prueba",
+    passedLabel: "Pasó",
+    failedLabel: "Falló",
+    inputLabel: "Entrada",
+    expectedLabel: "Esperado",
+    obtainedLabel: "Obtenido",
+    errorLabel: "Error",
+    placeholder: "Escriba su código aquí",
+  },
+};
+
+function getInitialPhpCode(functionName: string, lang: string = "pt") {
+  const comment = uiTranslations[lang]?.placeholder || uiTranslations.pt.placeholder;
+  return `<?php
+function ${functionName}($a, $b) {
+    // ${comment}
     return 0;
 }
 ?>`;
+}
 
 let editor: EditorView;
 let phpEngine: PHP;
@@ -39,7 +110,7 @@ async function init() {
 
   // Initialize CodeMirror
   const state = EditorState.create({
-    doc: initialPhpCode,
+    doc: getInitialPhpCode("somar"),
     extensions: [basicSetup, php(), oneDark, EditorView.lineWrapping],
   });
 
@@ -47,6 +118,19 @@ async function init() {
     state,
     parent: editorContainer,
   });
+
+  const langSelect = document.getElementById("language-select") as HTMLSelectElement;
+  if (langSelect) {
+    langSelect.addEventListener("change", async (e) => {
+      currentLanguage = (e.target as HTMLSelectElement).value;
+      updateUiLanguage();
+      if (phpEngine) {
+        await loadExercise();
+      }
+    });
+  }
+
+  runBtn.addEventListener("click", runCode);
 
   outputEl.textContent = "Carregando motor PHP...";
 
@@ -65,7 +149,17 @@ async function init() {
     console.error(e);
   }
 
-  runBtn.addEventListener("click", runCode);
+}
+
+function updateUiLanguage() {
+  const t = uiTranslations[currentLanguage];
+  const runBtn = document.getElementById("run-btn");
+  const resultLabel = document.querySelector(".output-header span:first-child");
+  const title = document.querySelector("header h1");
+  
+  if (runBtn) runBtn.textContent = t.run;
+  if (resultLabel) resultLabel.textContent = t.result;
+  if (title) title.textContent = currentLanguage === "pt" ? "PHP Interativo" : (currentLanguage === "en" ? "Interactive PHP" : "PHP Interactivo");
 }
 
 async function loadExercise() {
@@ -73,13 +167,19 @@ async function loadExercise() {
   if (!instructionsEl) return;
 
   try {
-    // In a real app, this URL would be dynamic
+    // Load based on language
     const exercise = await exerciseManager.loadExercise(
-      "./src/exercises/soma.md"
+      `./src/exercises/${currentLanguage}/soma.md`
     );
 
     // Render Instructions
     instructionsEl.innerHTML = await marked.parse(exercise.instructions);
+
+    // Update editor with exercise-specific stub
+    const newContent = getInitialPhpCode(exercise.functionName, currentLanguage);
+    editor.dispatch({
+      changes: { from: 0, to: editor.state.doc.length, insert: newContent },
+    });
   } catch (e) {
     console.error("Failed to load exercise", e);
     instructionsEl.innerHTML = "<p>Erro ao carregar exercício.</p>";
@@ -144,26 +244,28 @@ function renderTestResults(userOutput: string, results: TestResult[]) {
 
   if (!outputEl || !statusEl) return;
 
+  const t = uiTranslations[currentLanguage];
+
   let html = "";
   if (userOutput.trim()) {
-    html += `Output do seu código:\n${userOutput}\n\n`;
+    html += `${t.userOutput}\n${userOutput}\n\n`;
   }
 
   let allPassed = true;
 
-  html += "Resultados dos Testes:\n";
+  html += `${t.testResults}\n`;
   results.forEach((r) => {
     if (r.passed) {
-      html += `✅ Teste ${r.id}: Passou\n`;
+      html += `✅ ${t.testLabel} ${r.id}: ${t.passedLabel}\n`;
     } else {
       allPassed = false;
-      html += `❌ Teste ${r.id}: Falhou\n`;
-      html += `   Input: ${JSON.stringify(r.input)}\n`;
-      html += `   Esperado: ${r.expected}\n`;
+      html += `❌ ${t.testLabel} ${r.id}: ${t.failedLabel}\n`;
+      html += `   ${t.inputLabel}: ${JSON.stringify(r.input)}\n`;
+      html += `   ${t.expectedLabel}: ${r.expected}\n`;
       if (r.error) {
-        html += `   Erro: ${r.error}\n`;
+        html += `   ${t.errorLabel}: ${r.error}\n`;
       } else {
-        html += `   Obtido: ${r.actual}\n`;
+        html += `   ${t.obtainedLabel}: ${r.actual}\n`;
       }
     }
   });
@@ -171,10 +273,10 @@ function renderTestResults(userOutput: string, results: TestResult[]) {
   outputEl.textContent = html;
 
   if (allPassed) {
-    statusEl.textContent = "✅ Aprovado";
+    statusEl.textContent = `✅ ${t.passed}`;
     statusEl.className = "pass";
   } else {
-    statusEl.textContent = "❌ Falhou";
+    statusEl.textContent = `❌ ${t.fail}`;
     statusEl.className = "fail";
   }
 }
