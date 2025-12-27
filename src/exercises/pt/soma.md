@@ -1,6 +1,7 @@
 ---
 id: "soma-simples"
 title: "Soma de Inteiros"
+functionName: "somar"
 difficulty: "fácil"
 tests:
   - input: [2, 3]

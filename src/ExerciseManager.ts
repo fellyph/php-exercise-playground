@@ -6,7 +6,9 @@ interface TestCase {
 }
 
 interface Exercise {
+  id: string;
   title: string;
+  functionName: string;
   tests: TestCase[];
   instructions: string;
 }
@@ -31,10 +33,12 @@ export class ExerciseManager {
     const frontmatter = parts[1];
     const body = parts.slice(2).join("---");
 
-    const metadata = yaml.load(frontmatter) as Partial<Exercise>;
+    const metadata = yaml.load(frontmatter) as any;
 
     this.currentExercise = {
+      id: metadata.id,
       title: metadata.title || "Untitled",
+      functionName: metadata.functionName || "somar",
       tests: metadata.tests || [],
       instructions: body.trim(),
     };
@@ -53,6 +57,8 @@ export class ExerciseManager {
     const tests = this.currentExercise.tests;
     const testJson = JSON.stringify(tests);
 
+    const functionName = this.currentExercise.functionName;
+    
     // PHP snippet to append
     const runnerCode = `
 ?>
@@ -69,10 +75,10 @@ foreach ($tests as $index => $test) {
     try {
         // Capture output if the function prints instead of returning
         ob_start();
-        if (function_exists('somar')) {
-            $actual = call_user_func_array('somar', $input);
+        if (function_exists('${functionName}')) {
+            $actual = call_user_func_array('${functionName}', $input);
         } else {
-             throw new Exception("Função 'somar' não encontrada.");
+             throw new Exception("Função '${functionName}' não encontrada.");
         }
         $output = ob_get_clean();
         
