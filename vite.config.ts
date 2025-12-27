@@ -1,25 +1,31 @@
 import { defineConfig } from "vite";
-import wasm from "vite-plugin-wasm";
+
 import topLevelAwait from "vite-plugin-top-level-await";
 import { resolve } from "path";
 
 export default defineConfig({
-  plugins: [wasm(), topLevelAwait()],
+  plugins: [topLevelAwait()],
   server: {
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin",
       "Cross-Origin-Embedder-Policy": "require-corp",
     },
   },
-  assetsInclude: ["**/*.dat"],
+  assetsInclude: ["**/*.dat", "**/*.wasm"],
   optimizeDeps: {
     include: ["ini"],
-    exclude: ["@php-wasm/web", "@php-wasm/universal", "@wp-playground/common"],
+    exclude: [
+      "@php-wasm/web",
+      "@php-wasm/web-8-3",
+      "@php-wasm/universal",
+      "@wp-playground/common"
+    ],
   },
   define: {
     global: "globalThis",
   },
   resolve: {
+    dedupe: ["@php-wasm/universal"],
     alias: {
       ini: "ini",
       path: "path-browserify",
