@@ -119,6 +119,19 @@ async function init() {
     parent: editorContainer,
   });
 
+  const langSelect = document.getElementById("language-select") as HTMLSelectElement;
+  if (langSelect) {
+    langSelect.addEventListener("change", async (e) => {
+      currentLanguage = (e.target as HTMLSelectElement).value;
+      updateUiLanguage();
+      if (phpEngine) {
+        await loadExercise();
+      }
+    });
+  }
+
+  runBtn.addEventListener("click", runCode);
+
   outputEl.textContent = "Carregando motor PHP...";
 
   // Initialize PHP WASM
@@ -136,16 +149,6 @@ async function init() {
     console.error(e);
   }
 
-  const langSelect = document.getElementById("language-select") as HTMLSelectElement;
-  if (langSelect) {
-    langSelect.addEventListener("change", async (e) => {
-      currentLanguage = (e.target as HTMLSelectElement).value;
-      updateUiLanguage();
-      await loadExercise();
-    });
-  }
-
-  runBtn.addEventListener("click", runCode);
 }
 
 function updateUiLanguage() {
