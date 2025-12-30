@@ -9,6 +9,7 @@ interface Exercise {
   id: string;
   title: string;
   functionName: string;
+  args: string[];
   tests: TestCase[];
   instructions: string;
 }
@@ -39,6 +40,7 @@ export class ExerciseManager {
       id: metadata.id,
       title: metadata.title || "Untitled",
       functionName: metadata.functionName || "somar",
+      args: metadata.args || ["$a", "$b"],
       tests: metadata.tests || [],
       instructions: body.trim(),
     };
@@ -56,46 +58,47 @@ export class ExerciseManager {
 
     const tests = this.currentExercise.tests;
     const testJson = JSON.stringify(tests);
-
     const functionName = this.currentExercise.functionName;
-    
-    // PHP snippet to append
+
+    // Wrap user code in ob_start to capture all output
+    const wrappedCode = `<?php ob_start(); ?>${userCode}<?php $userOutput = ob_get_clean(); ?>`;
+
     const runnerCode = `
-?>
 <?php
 // --- END USER DATA ---
 
-$tests = json_decode('${testJson}', true);
+$tests = json_decode('${testJson}', false);
 $results = [];
 
 foreach ($tests as $index => $test) {
-    $input = $test['input'];
-    $expected = $test['output'];
+    $input = $test->input;
+    $expected = $test->output;
     
     try {
-        // Capture output if the function prints instead of returning
+        // Prepare to capture function-specific output if any
         ob_start();
         if (function_exists('${functionName}')) {
             $actual = call_user_func_array('${functionName}', $input);
         } else {
              throw new Exception("Função '${functionName}' não encontrada.");
         }
-        $output = ob_get_clean();
+        $testOutput = ob_get_clean();
         
-        // If function returned nothing, check captured output (optional, depending on exercise type)
-        if ($actual === null && !empty($output)) {
-             $actual = trim($output);
+        // Combine with user level output if needed, or just use as result
+        if ($actual === null && !empty($testOutput)) {
+             $actual = trim($testOutput);
         }
 
-        // Convert to string for comparison to match expected output format
-        $actualStr = (string)$actual;
+        // Compare using JSON encoding to support arrays and objects
+        $passed = (json_encode($actual, JSON_UNESCAPED_UNICODE) === json_encode($expected, JSON_UNESCAPED_UNICODE));
         
-        $passed = ($actualStr === $expected);
+        // Convert to string for display
+        $actualStr = (is_array($actual) || is_object($actual)) ? json_encode($actual, JSON_UNESCAPED_UNICODE) : (string)$actual;
         
         $results[] = [
             'id' => $index + 1,
             'input' => $input,
-            'expected' => $expected,
+            'expected' => is_string($expected) ? $expected : json_encode($expected, JSON_UNESCAPED_UNICODE),
             'actual' => $actualStr,
             'passed' => $passed
         ];
@@ -103,18 +106,19 @@ foreach ($tests as $index => $test) {
         $results[] = [
             'id' => $index + 1,
             'input' => $input,
-            'expected' => $expected,
+            'expected' => is_string($expected) ? $expected : json_encode($expected, JSON_UNESCAPED_UNICODE),
             'error' => $e->getMessage(),
             'passed' => false
         ];
     }
 }
 
+echo $userOutput; // Print captured user output
 echo "---TEST_RESULTS_START---";
-echo json_encode(['results' => $results]);
+echo json_encode(['results' => $results], JSON_UNESCAPED_UNICODE);
 echo "---TEST_RESULTS_END---";
 ?>`;
 
-    return userCode + "\n" + runnerCode;
+    return wrappedCode + runnerCode;
   }
 }

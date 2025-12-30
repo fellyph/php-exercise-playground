@@ -7,7 +7,7 @@ import { loadWebRuntime } from "@php-wasm/web";
 import { ExerciseManager } from "./ExerciseManager";
 import { marked } from "marked";
 
-const EXERCISES = ["soma", "multiplicar"];
+const EXERCISES = ["soma", "multiplicar", "objetos", "arrays", "classes"];
 
 interface TestResult {
   id: number;
@@ -95,10 +95,11 @@ const uiTranslations: Record<string, any> = {
   },
 };
 
-function getInitialPhpCode(functionName: string, lang: string = "pt") {
+function getInitialPhpCode(functionName: string, args: string[], lang: string = "pt") {
   const comment = uiTranslations[lang]?.placeholder || uiTranslations.pt.placeholder;
+  const argsList = args.join(", ");
   return `<?php
-function ${functionName}($a, $b) {
+function ${functionName}(${argsList}) {
     // ${comment}
     return 0;
 }
@@ -134,7 +135,7 @@ async function init() {
 
   // Initialize CodeMirror
   const state = EditorState.create({
-    doc: getInitialPhpCode("somar"),
+    doc: getInitialPhpCode("somar", ["$a", "$b"]),
     extensions: [basicSetup, php(), oneDark, EditorView.lineWrapping],
   });
 
@@ -232,7 +233,7 @@ async function loadExercise() {
     instructionsEl.innerHTML = await marked.parse(exercise.instructions);
 
     // Update editor with exercise-specific stub
-    const newContent = getInitialPhpCode(exercise.functionName, currentLanguage);
+    const newContent = getInitialPhpCode(exercise.functionName, exercise.args, currentLanguage);
     editor.dispatch({
       changes: { from: 0, to: editor.state.doc.length, insert: newContent },
     });
@@ -313,6 +314,7 @@ function renderTestResults(userOutput: string, results: TestResult[]) {
   results.forEach((r) => {
     if (r.passed) {
       html += `✅ ${t.testLabel} ${r.id}: ${t.passedLabel}\n`;
+      html += `   ${t.obtainedLabel}: ${r.actual}\n`;
     } else {
       allPassed = false;
       html += `❌ ${t.testLabel} ${r.id}: ${t.failedLabel}\n`;
