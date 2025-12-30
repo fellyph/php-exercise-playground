@@ -60,15 +60,15 @@ test.describe('Multi-language Support', () => {
     // Wait for exercise to load
     await expect(page.locator('#exercise-content h1')).toHaveText('Sum of Integers');
 
-    // Type the solution in the editor
-    const editorContent = page.locator('.cm-content');
-    await editorContent.click();
-    
-    // Clear the existing code and type a working solution
-    // CodeMirror is tricky to type into, sometimes we need to use keyboard commands
-    await page.keyboard.press('Meta+A');
-    await page.keyboard.press('Backspace');
-    await page.keyboard.type('<?php\nfunction sum($a, $b) {\n    return $a + $b;\n}\n?>');
+    // Use direct editor manipulation for reliability across platforms
+    await page.evaluate(() => {
+      const ed = (window as any).editor;
+      if (ed) {
+        ed.dispatch({
+          changes: { from: 0, to: ed.state.doc.length, insert: '<?php\nfunction sum($a, $b) {\n    return $a + $b;\n}\n?>' }
+        });
+      }
+    });
 
     // Run the code
     await page.getByRole('button', { name: /Run/ }).click();

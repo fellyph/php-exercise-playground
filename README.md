@@ -44,6 +44,15 @@ async function run() {
 ## 📂 Estrutura do Projeto
 
 - `index.html`: Estrutura da UI.
-- `style.css`: Estilização premium (Dark Mode).
-- `main.js`: Lógica de integração PHP + Editor.
-- `vite.config.js`: Configurações necessárias para carregar arquivos `.so` e `.wasm`.
+- `src/style.css`: Estilização premium (Dark Mode).
+- `src/main.ts`: Lógica de integração PHP + Editor.
+- `src/ExerciseManager.ts`: Gerencia o carregamento e validação de exercícios.
+- `vite.config.ts`: Configurações necessárias para carregar arquivos `.so` e `.wasm`.
+
+## 📚 Exercícios Disponíveis
+
+1. **Soma de Inteiros** (`soma`): Básico sobre funções e soma.
+2. **Multiplicação de Inteiros** (`multiplicar`): Básico sobre funções e multiplicação.
+3. **Navegação em Objetos** (`objetos`): Acesso a propriedades de objetos aninhados com `->`.
+4. **Manipulando Arrays** (`arrays`): Adição de elementos em arrays PHP.
+5. **Classes e Objetos** (`classes`): Criação de classes, modificadores de acesso e métodos.
