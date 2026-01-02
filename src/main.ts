@@ -7,7 +7,7 @@ import { loadWebRuntime } from "@php-wasm/web";
 import { ExerciseManager } from "./ExerciseManager";
 import { marked } from "marked";
 
-const EXERCISES = ["soma", "multiplicar", "objetos", "arrays", "classes"];
+const EXERCISES = ["soma", "multiplicar", "objetos", "arrays", "classes", "strings"];
 
 interface TestResult {
   id: number;
