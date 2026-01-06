@@ -227,7 +227,7 @@ async function loadExercise() {
   try {
     // Load based on language and exercise ID
     const exercise = await exerciseManager.loadExercise(
-      `./src/exercises/${currentLanguage}/${currentExerciseId}.md`
+      `./exercises/${currentLanguage}/${currentExerciseId}.md`
     );
 
     // Render Instructions
