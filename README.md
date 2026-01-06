@@ -1,59 +1,53 @@
 # PHP Learning Playground (PHP Scholar)
 
-Este é um protótipo de uma ferramenta interativa para estudantes de PHP, utilizando WebAssembly (**PHP-WASM**) para executar código diretamente no navegador.
+This is a prototype of an interactive tool for PHP students, using WebAssembly (**PHP-WASM**) to execute code directly in the browser.
 
-## 🚀 Como Executar
+## 🚀 How to Run
 
-1. Certifique-se de ter o [Node.js](https://nodejs.org/) instalado.
-2. No diretório do projeto, instale as dependências:
+1. Make sure you have [Node.js](https://nodejs.org/) installed.
+2. In the project directory, install dependencies:
    ```bash
    npm install
    ```
-3. Inicie o servidor de desenvolvimento:
+3. Start the development server:
    ```bash
    npm run dev
    ```
-4. Acesse `http://localhost:5173`.
+4. Access `http://localhost:5173`.
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Technologies Used
 
-- **@php-wasm/web**: O motor PHP rodando em WebAssembly.
-- **CodeMirror 6**: Editor de código moderno com suporte a PHP.
-- **Vite**: Build tool rápida para o frontend.
-- **Vanilla JS**: Para manter o projeto leve e focado.
+- **@php-wasm/web-8-3**: The PHP engine running in WebAssembly.
+- **CodeMirror 6**: Modern code editor with PHP support.
+- **Vite**: Fast build tool for the frontend.
+- **TypeScript**: For better development experience and error validation.
 
-## 💡 Como funciona
+## 💡 How it works
 
-A ferramenta carrega o runtime do PHP 8.3 via WASM. Quando o estudante clica em "Executar" (ou usa `Ctrl+Enter`), o código do editor é enviado para o `php.runStream()`, que retorna o `stdout` e `stderr` do script.
+The tool loads the PHP 8.3 runtime via WASM. When the student clicks "Run" (or uses `Ctrl+Enter`), the editor's code is processed by the PHP engine, which evaluates the script and runs the associated test cases.
 
-### Versão para Node.js
+## 📂 Project Structure
 
-Embora o protótipo seja web, a biblioteca `@php-wasm/node` (citada na sua solicitação) funciona de forma quase idêntica:
+- `index.html`: UI structure.
+- `src/style.css`: Premium styling (Modern Dark Mode).
+- `src/main.ts`: Integration logic between PHP + Editor.
+- `src/ExerciseManager.ts`: Manages loading and validation of exercises.
+- `public/exercises/`: Markdown files containing exercise instructions and tests.
 
-```javascript
-import { PHP } from "@php-wasm/universal";
-import { loadNodeRuntime } from "@php-wasm/node";
+## 📚 Available Exercises
 
-async function run() {
-  const php = new PHP(await loadNodeRuntime("8.3"));
-  const result = await php.runStream({ code: '<?php echo "Olá!"; ?>' });
-  console.log(await result.stdoutText);
-}
-```
+1. **Sum of Integers** (`soma`): Basics about functions and addition.
+2. **Multiplication of Integers** (`multiplicar`): Basics about functions and multiplication.
+3. **Object Navigation** (`objetos`): Accessing nested object properties with `->`.
+4. **Handling Arrays** (`arrays`): Adding elements to PHP arrays.
+5. **Classes and Objects** (`classes`): Creating classes, access modifiers, and methods.
+6. **String Manipulation** (`strings`): Using native functions to reverse text.
 
-## 📂 Estrutura do Projeto
+## 🌐 Multilanguage Support
 
-- `index.html`: Estrutura da UI.
-- `src/style.css`: Estilização premium (Dark Mode).
-- `src/main.ts`: Lógica de integração PHP + Editor.
-- `src/ExerciseManager.ts`: Gerencia o carregamento e validação de exercícios.
-- `vite.config.ts`: Configurações necessárias para carregar arquivos `.so` e `.wasm`.
+The playground supports:
 
-## 📚 Exercícios Disponíveis
-
-1. **Soma de Inteiros** (`soma`): Básico sobre funções e soma.
-2. **Multiplicação de Inteiros** (`multiplicar`): Básico sobre funções e multiplicação.
-3. **Navegação em Objetos** (`objetos`): Acesso a propriedades de objetos aninhados com `->`.
-4. **Manipulando Arrays** (`arrays`): Adição de elementos em arrays PHP.
-5. **Classes e Objetos** (`classes`): Criação de classes, modificadores de acesso e métodos.
-6. **Manipulação de Strings** (`strings`): Uso de funções nativas para inverter textos.
+- 🇧🇷 Portuguese (`/pt/` or `?lang=pt`)
+- 🇺🇸 English (`/en/` or `?lang=en`)
+- 🇪🇸 Spanish (`/es/` or `?lang=es`)
+- 🇮🇹 Italian (`/it/` or `?lang=it`)
