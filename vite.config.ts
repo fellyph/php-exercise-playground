@@ -35,11 +35,28 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       external: ["env", "wasi_snapshot_preview1", /^GOT\..*$/],
       onwarn(warning, warn) {
         if (warning.code === "EVAL" && warning.id?.includes("php-wasm")) return;
         warn(warning);
+      },
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("@codemirror") || id.includes("codemirror")) {
+              return "codemirror";
+            }
+            if (id.includes("marked") || id.includes("js-yaml")) {
+              return "parsers";
+            }
+            if (id.includes("@php-wasm")) {
+              return "php-wasm-bridge";
+            }
+            return "vendor";
+          }
+        },
       },
     },
     commonjsOptions: {
