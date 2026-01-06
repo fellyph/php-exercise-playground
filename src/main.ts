@@ -2,7 +2,7 @@ import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { php } from "@codemirror/lang-php";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { PHP } from "@php-wasm/universal";
+import { PHP, loadPHPRuntime } from "@php-wasm/universal";
 import { getPHPLoaderModule } from "@php-wasm/web-8-3";
 import { ExerciseManager } from "./ExerciseManager";
 import { marked } from "marked";
@@ -170,8 +170,8 @@ async function init() {
   // Initialize PHP WASM
   try {
     const loaderModule = await getPHPLoaderModule();
-    const runtime = await loaderModule.init("WEB");
-    phpEngine = new PHP(runtime);
+    const runtimeId = await loadPHPRuntime(loaderModule);
+    phpEngine = new PHP(runtimeId);
     console.log("PHP Engine loaded", phpEngine);
     outputEl.textContent = t.phpReady;
 
