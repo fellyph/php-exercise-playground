@@ -199,6 +199,14 @@ function updateUiLanguage() {
   const nextBtn = document.getElementById("next-btn");
   if (prevBtn) prevBtn.textContent = `⬅ ${t.prev}`;
   if (nextBtn) nextBtn.textContent = `${t.next} ➡`;
+
+  // Update status message if showing ready state
+  const outputEl = document.getElementById("output");
+  if (outputEl && (outputEl.textContent === uiTranslations.pt.ready || 
+                   outputEl.textContent === uiTranslations.en.ready || 
+                   outputEl.textContent === uiTranslations.es.ready)) {
+    outputEl.textContent = t.ready;
+  }
 }
 
 function navigateExercise(direction: number) {
@@ -239,8 +247,8 @@ async function loadExercise() {
       changes: { from: 0, to: editor.state.doc.length, insert: newContent },
     });
   } catch (e) {
-    console.error("Failed to load exercise", e);
-    instructionsEl.innerHTML = "<p>Erro ao carregar exercício.</p>";
+    const t = uiTranslations[currentLanguage];
+    instructionsEl.innerHTML = `<p>${t.error}: ${e}</p>`;
   }
 }
 
@@ -250,9 +258,10 @@ async function runCode() {
 
   if (!outputEl || !statusEl || !editor) return;
 
+  const t = uiTranslations[currentLanguage];
   const code = editor.state.doc.toString();
 
-  outputEl.textContent = "Executando...";
+  outputEl.textContent = t.executing;
   statusEl.textContent = "⏳";
   statusEl.className = "";
 
@@ -286,12 +295,12 @@ async function runCode() {
     } else {
       // No test results found (maybe syntax error or didn't run to completion)
       outputEl.innerHTML = fullOutput;
-      statusEl.textContent = "⚠️ Erro";
+      statusEl.textContent = `⚠️ ${t.error}`;
       statusEl.className = "fail";
     }
   } catch (e: any) {
-    outputEl.textContent = "Erro de Execução: " + e.message;
-    statusEl.textContent = "❌ Erro";
+    outputEl.textContent = `${t.errorLabel}: ` + e.message;
+    statusEl.textContent = `❌ ${t.error}`;
     statusEl.className = "fail";
   }
 }
