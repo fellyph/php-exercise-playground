@@ -6,7 +6,9 @@
   --panel-bg: #202020;
   --text-color: rgba(255, 255, 255, 0.87);
   --border-color: #333;
-  --header-height: 60px;
+  --header-height: 52px;
+  --glass-bg: rgba(30, 30, 30, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -15,12 +17,8 @@
   padding: 0;
 }
 
-body.no-header .playground-layout {
-  height: 100vh;
-}
-
 body {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Outfit", Inter, system-ui, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   height: 100vh;
@@ -34,49 +32,76 @@ body {
 }
 
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--header-height);
-  background-color: var(--surface-color);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .header-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
 #language-select {
-  background: #333;
+  background: rgba(255, 255, 255, 0.05);
   color: white;
-  border: 1px solid #444;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
   outline: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#language-select:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
 }
 
 .primary-btn {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, #646cff 0%, #4b54e0 100%);
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(100, 108, 255, 0.2);
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(100, 108, 255, 0.3);
 }
 
 .primary-btn:active {
-  opacity: 0.8;
+  transform: translateY(0);
 }
 
 /* Layout Main */
@@ -84,12 +109,18 @@ h1 {
   flex: 1;
   display: flex;
   overflow: hidden;
+  margin-top: var(--header-height);
   height: calc(100vh - var(--header-height));
+}
+
+body.no-header .playground-layout {
+  margin-top: 0;
+  height: 100vh;
 }
 
 /* 1. Instructions Panel */
 #instructions-panel {
-  width: 350px;
+  width: 380px;
   background: var(--panel-bg);
   border-right: 1px solid var(--border-color);
   padding: 1rem;
@@ -131,20 +162,29 @@ h1 {
   color: #fff;
 }
 
-#instructions-panel h1 { font-size: 1.4rem; margin-bottom: 1rem; margin-top: 0; }
-#instructions-panel h2 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #fff; }
-#instructions-panel code { 
-  background: #333; 
-  padding: 2px 4px; 
-  border-radius: 4px; 
-  font-family: 'Fira Code', monospace;
+#instructions-panel h1 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+#instructions-panel h2 {
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+#instructions-panel code {
+  background: #333;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: "Fira Code", monospace;
   font-size: 0.9em;
 }
-#instructions-panel pre { 
-  background: #111; 
-  padding: 1rem; 
-  border-radius: 6px; 
-  overflow-x: auto; 
+#instructions-panel pre {
+  background: #111;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
   margin: 1rem 0;
 }
 #instructions-panel pre code {
@@ -189,7 +229,7 @@ h1 {
 
 #output {
   padding: 1rem;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   font-size: 0.9rem;
   white-space: pre-wrap;
   overflow-y: auto;
@@ -198,20 +238,75 @@ h1 {
 }
 
 /* Test Results Colors */
-.pass { color: #4caf50; font-weight: bold; }
-.fail { color: #f44336; font-weight: bold; }
+.pass {
+  color: #4caf50;
+  font-weight: bold;
+}
+.fail {
+  color: #f44336;
+  font-weight: bold;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
+  :root {
+    --header-height: 48px;
+  }
+
+  header {
+    padding: 0 0.75rem;
+  }
+
+  h1 {
+    font-size: 0.95rem;
+  }
+
+  #language-select {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .primary-btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  /* Only show "Executar" icon/short text on very small screens */
+  @media (max-width: 480px) {
+    .primary-btn {
+      font-size: 0;
+      padding: 0.4rem 0.6rem;
+    }
+    .primary-btn::after {
+      content: "▶";
+      font-size: 1rem;
+    }
+  }
+
   .playground-layout {
     flex-direction: column;
   }
 
   #instructions-panel {
     width: 100%;
-    height: 35%; /* Fixed height for instructions on mobile */
+    height: 40%;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem;
+  }
+
+  #instructions-panel h1 {
+    font-size: 1.2rem;
+  }
+
+  .navigation-controls {
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+
+  .secondary-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
   }
 
   #editor-container {
@@ -219,6 +314,6 @@ h1 {
   }
 
   #output-container {
-    flex: 1;
+    flex: 1.5;
   }
 }
