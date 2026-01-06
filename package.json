@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && mkdir -p dist/pt dist/en dist/es dist/it && cp dist/index.html dist/pt/index.html && cp dist/index.html dist/en/index.html && cp dist/index.html dist/es/index.html && cp dist/index.html dist/it/index.html",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test:e2e": "playwright test"
@@ -34,5 +34,8 @@
     "js-yaml": "^4.1.1",
     "marked": "^17.0.1",
     "path-browserify": "^1.0.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.55.1"
   }
 }

@@ -53,6 +53,32 @@ test.describe('Multi-language Support', () => {
     await expect(editorContent).toContainText('Escriba su código aquí');
   });
 
+  test('should switch to Italian', async ({ page }) => {
+    const langSelect = page.locator('#language-select');
+    await langSelect.selectOption('it');
+
+    // Check URL
+    await expect(page).toHaveURL(/\/it/);
+
+    // Check Run Button
+    await expect(page.getByRole('button', { name: /Esegui/ })).toBeVisible();
+
+    // Check Exercise Instructions
+    const exerciseTitle = page.locator('#exercise-content h1');
+    await expect(exerciseTitle).toHaveText('Somma di interi');
+
+    // Check Editor code
+    const editorContent = page.locator('.cm-content');
+    await expect(editorContent).toContainText('function somma');
+    await expect(editorContent).toContainText('Scrivi il tuo codice qui');
+  });
+
+  test('should load English from URL path /en', async ({ page }) => {
+    await page.goto('/en');
+    await expect(page.locator('#language-select')).toHaveValue('en');
+    await expect(page.getByRole('button', { name: /Run/ })).toBeVisible();
+  });
+
   test('should run code successfully in English', async ({ page }) => {
     const langSelect = page.locator('#language-select');
     await langSelect.selectOption('en');
