@@ -90,7 +90,16 @@ foreach ($tests as $index => $test) {
         }
 
         // Compare using JSON encoding to support arrays and objects
-        $passed = (json_encode($actual, JSON_UNESCAPED_UNICODE) === json_encode($expected, JSON_UNESCAPED_UNICODE));
+        // We use loose equality because expected values from MD might be strings while actual return values might be integers
+        $expectedEncoded = json_encode($expected, JSON_UNESCAPED_UNICODE);
+        $actualEncoded = json_encode($actual, JSON_UNESCAPED_UNICODE);
+
+        $passed = ($actualEncoded === $expectedEncoded);
+        
+        // If strict JSON comparison fails, try loose comparison for numeric values
+        if (!$passed && is_numeric($actual) && is_numeric($expected)) {
+            $passed = ((string)$actual === (string)$expected);
+        }
         
         // Convert to string for display
         $actualStr = (is_array($actual) || is_object($actual)) ? json_encode($actual, JSON_UNESCAPED_UNICODE) : (string)$actual;
