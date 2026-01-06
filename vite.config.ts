@@ -30,10 +30,6 @@ export default defineConfig({
       ini: "ini",
       path: "path-browserify",
       module: resolve(__dirname, "src/stubs/module.js"),
-      "./lib/extensions/intl/shared/icu.dat": resolve(
-        __dirname,
-        "node_modules/@php-wasm/web/shared/icu.dat"
-      ),
     },
   },
   build: {
