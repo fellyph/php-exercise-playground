@@ -56,3 +56,4 @@ async function run() {
 3. **Navegação em Objetos** (`objetos`): Acesso a propriedades de objetos aninhados com `->`.
 4. **Manipulando Arrays** (`arrays`): Adição de elementos em arrays PHP.
 5. **Classes e Objetos** (`classes`): Criação de classes, modificadores de acesso e métodos.
+6. **Manipulação de Strings** (`strings`): Uso de funções nativas para inverter textos.
