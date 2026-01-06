@@ -37,6 +37,10 @@ export default defineConfig({
     target: "esnext",
     rollupOptions: {
       external: ["env", "wasi_snapshot_preview1", /^GOT\..*$/],
+      onwarn(warning, warn) {
+        if (warning.code === "EVAL" && warning.id?.includes("php-wasm")) return;
+        warn(warning);
+      },
     },
     commonjsOptions: {
       include: [/node_modules/],
