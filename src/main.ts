@@ -19,9 +19,20 @@ interface TestResult {
 }
 
 const urlParams = new URLSearchParams(window.location.search);
-let currentLanguage = urlParams.get("lang") || "pt";
 let currentExerciseId = urlParams.get("exercise") || "soma";
 const hideHeader = urlParams.get("hide-header") === "true";
+
+function getLanguageFromUrl(): string {
+  // Try path first: /en/soma or /en
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  if (pathParts.length > 0 && ['pt', 'en', 'es', 'it'].includes(pathParts[0])) {
+    return pathParts[0];
+  }
+  // Fallback to query param
+  return urlParams.get("lang") || "pt";
+}
+
+let currentLanguage = getLanguageFromUrl();
 
 const uiTranslations: Record<string, any> = {
   pt: {
@@ -93,6 +104,29 @@ const uiTranslations: Record<string, any> = {
     next: "Siguiente",
     prev: "Anterior",
   },
+  it: {
+    run: "Esegui (Ctrl+Enter) ▶",
+    result: "Risultato",
+    loadingPhp: "Caricamento motore PHP...",
+    phpReady: "PHP Pronto. Caricamento esercizio...",
+    ready: "Pronto per iniziare.",
+    executing: "Esecuzione...",
+    error: "Errore",
+    fail: "Fallito",
+    passed: "Superato",
+    userOutput: "Output del tuo codice:",
+    testResults: "Risultati dei Test:",
+    testLabel: "Test",
+    passedLabel: "Superato",
+    failedLabel: "Fallito",
+    inputLabel: "Input",
+    expectedLabel: "Atteso",
+    obtainedLabel: "Ottenuto",
+    errorLabel: "Errore",
+    placeholder: "Scrivi il tuo codice qui",
+    next: "Successivo",
+    prev: "Precedente",
+  },
 };
 
 function getInitialPhpCode(functionName: string, args: string[], lang: string = "pt") {
@@ -149,6 +183,12 @@ async function init() {
   if (langSelect) {
     langSelect.addEventListener("change", async (e) => {
       currentLanguage = (e.target as HTMLSelectElement).value;
+      
+      // Update URL path
+      const url = new URL(window.location.href);
+      url.pathname = `/${currentLanguage}`;
+      window.history.pushState({}, "", url);
+
       updateUiLanguage();
       if (phpEngine) {
         await loadExercise();
@@ -219,8 +259,9 @@ function navigateExercise(direction: number) {
 
     currentExerciseId = EXERCISES[nextIndex];
     
-    // Update URL without reloading
+    // Update URL path
     const url = new URL(window.location.href);
+    url.pathname = `/${currentLanguage}`;
     url.searchParams.set("exercise", currentExerciseId);
     window.history.pushState({}, "", url);
 
