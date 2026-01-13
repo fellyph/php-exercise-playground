@@ -36,7 +36,7 @@ let currentLanguage = getLanguageFromUrl();
 
 const uiTranslations: Record<string, any> = {
   pt: {
-    run: "Executar (Ctrl+Enter) ▶",
+    run: "Executar (Ctrl+S) ▶",
     result: "Resultado",
     loadingPhp: "Carregando motor PHP...",
     phpReady: "PHP Pronto. Carregando exercício...",
@@ -59,7 +59,7 @@ const uiTranslations: Record<string, any> = {
     prev: "Anterior",
   },
   en: {
-    run: "Run (Ctrl+Enter) ▶",
+    run: "Run (Ctrl+S) ▶",
     result: "Result",
     loadingPhp: "Loading PHP engine...",
     phpReady: "PHP Ready. Loading exercise...",
@@ -82,7 +82,7 @@ const uiTranslations: Record<string, any> = {
     prev: "Previous",
   },
   es: {
-    run: "Ejecutar (Ctrl+Enter) ▶",
+    run: "Ejecutar (Ctrl+S) ▶",
     result: "Resultado",
     loadingPhp: "Cargando motor PHP...",
     phpReady: "PHP Listo. Cargando ejercicio...",
@@ -105,7 +105,7 @@ const uiTranslations: Record<string, any> = {
     prev: "Anterior",
   },
   it: {
-    run: "Esegui (Ctrl+Enter) ▶",
+    run: "Esegui (Ctrl+S) ▶",
     result: "Risultato",
     loadingPhp: "Caricamento motore PHP...",
     phpReady: "PHP Pronto. Caricamento esercizio...",
@@ -203,6 +203,14 @@ async function init() {
   if (nextBtn) nextBtn.addEventListener("click", navigateExercise(1));
 
   runBtn.addEventListener("click", runCode);
+
+  // Add Ctrl+S keyboard shortcut to trigger code execution
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault();
+      runCode();
+    }
+  });
 
     const t = uiTranslations[currentLanguage];
     outputEl.textContent = t.loadingPhp;

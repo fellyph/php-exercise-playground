@@ -206,6 +206,15 @@ body.no-header .playground-layout {
   position: relative;
 }
 
+/* Ensure CodeMirror fills container and scrolls properly */
+#editor-container .cm-editor {
+  height: 100%;
+}
+
+#editor-container .cm-scroller {
+  overflow: auto;
+}
+
 #output-container {
   flex: 1;
   background-color: #1e1e1e;
